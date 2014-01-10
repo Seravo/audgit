@@ -1,11 +1,31 @@
 /*
- * The program must be run with at least one parameter and at least one value
- * e.g. audgit add /etc/hosts
- *
- * Assumptions:
- *  - first argument command
- *  - second argument file with absolute path
+ * Read showUsage() for instructions
  */
+
+function showUsage() {
+  // TODO: colorize output to make error messages and help text more distinguishable
+  console.log('\n' +
+    ' Audgit is a tool system administrators to help document their work.\n' +
+    '\n' +
+    ' When audgit is active all manually edited configuration files will\n' +
+    ' be hard linked in a git repository located in /audgit/\n' +
+    ' Interaction with this repo is automated with this git wrapper tool.\n' +
+    '\n' +
+    ' Typical work-flow:\n' +
+    '   audgit add /etc/nginx/nginx.conf\n' +
+    '   audgit commit -am "Configured Nginx"\n' +
+    '   nano /etc/nginx/nginx.conf\n' +
+    '   audgit commit "Gzip enabled"\n' +
+    '   audgit log\n'
+  );
+}
+
+function showError(msg, value) {
+  if (value === undefined) { var value = ''; }
+  console.log('ERROR:', msg, value);
+  showUsage();
+  process.exit(1); // exit with error
+}
 
 'use strict';
 
@@ -18,17 +38,28 @@ var spawn = require('child_process').spawn;
  */
 
 if (process.argv.length < 3) {
-  console.log('Usage: .... ');
-  process.exit(1); // exit with error
+  showError('No arguments given.');
 } else {
   var argv = process.argv.splice(2);
 }
 
-// Only allow these basic operations
-if (['add', 'rm', 'status', 'commit'].indexOf(argv[0]) === -1) {
-  console.log('Not valid action:', argv[0]);
-  process.exit(1); // exit with error
+// Only allow these basic operations and their argument counts
+if (['add', 'rm', 'commit', 'status', 'log'].indexOf(argv[0]) === -1) {
+  showError('Not a valid action:', argv[0]);
+} else {
+  if (['add', 'rm', 'commit'].indexOf(argv[0]) != -1 && argv.length != 2) {
+    showError('Incorrect arguments for action:', argv[0]);
+  } else if (['status', 'log'].indexOf(argv[0]) != -1 && argv.length != 1) {
+    showError('Incorrect arguments for action:', argv[0]);
+  }
 }
+
+// Automatically insert commit parameters
+if (argv[0] == 'commit') {
+  argv[2] = argv[1];
+  argv[1] = '-am';
+}
+
 
 // TODO: check that /audgit exists or create it (error code ENOENT)
 // TODO: check that /audgit/.git exists or init it (error code ENOENT)
@@ -44,8 +75,7 @@ if (argv[0] == 'add' && argv[1]) {
     var stats = fs.lstatSync(argv[1]);
   } catch (err) {
     if (err.code == 'ENOENT') {
-      console.log('No such file:', argv[0]);
-      process.exit(1); // exit with error
+      showError('No such file:', argv[1]);
     } else {
       throw err;
     }
@@ -81,8 +111,7 @@ if (argv[0] == 'add' && argv[1]) {
 */
   } else {
     // at the moment each file must be added individually
-    console.log('Error: not a valid file: ' + argv[1]);
-    process.exit(1); // exit with error
+    showError('Not a valid file:', argv[1]);
   }
 }
 
@@ -96,7 +125,7 @@ var d = domain.create();
 
 d.on('error', function(err) {
   if (err && err.code == 'ENOENT') {
-    console.log('Error: Check that directory /audgit/ exists');
+    showError('Check that directory /audgit/ exists');
   } else {
     console.error(err);
   }
@@ -120,7 +149,7 @@ d.run(function() {
   git.stderr.on('data', onStderr);
   git.on('close', onExit);
 
-  if (argv[0] == 'add') {
+  if (argv[0] == 'add' || argv[0] == 'rm') {
     // re-run to show status
     spawn('git', ['status'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
   }
@@ -140,6 +169,6 @@ function onStderr (data) {
 
 function onExit (code) {
   if (code > 0) {
-    console.log('Child process exited with code ' + code);
+    showError('Child process exited with code', code);
   }
 }
