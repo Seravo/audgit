@@ -1,0 +1,36 @@
+{
+  "name": "audgit",
+  "preferGlobal": true,
+  "version": "0.1.0",
+  "author": "Otto Kekäläinen <otto@seravo.fi>",
+  "description": "System administration documentation and auditing using Git version control",
+  "contributors": [
+  ],
+  "bin": {
+    "audgit": "./bin/audgit"
+  },
+  "scripts": {
+    "start": "node ./src/audgit.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seravo/audgit.git"
+  },
+  "keywords": [
+    "cli",
+    "tool",
+    "server",
+    "system administration",
+    "git",
+    "audit",
+    "log",
+    "logging"
+  ],
+  "dependencies": {
+    "optimist": ">=0.6.0"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.10"
+  }
+}
