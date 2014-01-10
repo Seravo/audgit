@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# On Debian/Ubuntu systems add this to /etc/update-motd.d/
+
+echo
+echo "Latest 3 system changes according in Audgit:"
+echo
+git --git-dir=/audgit/.git log --pretty=format:" %ai %an%n %s" -n 3 --date-order --reverse --stat

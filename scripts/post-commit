@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Add this to /audgit/.git/hooks
+
+git log --pretty=format:"%an: %s" -n 1 --stat | wall
+
+# It would be nice to disable wall to oneself,
+# but it is not possible at least with 'mesg' command
+# as there is no way to know what is the user tty
+# from inside this script
+

@@ -2,6 +2,8 @@
  * Read showUsage() for instructions
  */
 
+'use strict';
+
 function showUsage() {
   // TODO: colorize output to make error messages and help text more distinguishable
   console.log('\n' +
@@ -16,7 +18,7 @@ function showUsage() {
     '   audgit commit -am "Configured Nginx"\n' +
     '   nano /etc/nginx/nginx.conf\n' +
     '   audgit commit "Gzip enabled"\n' +
-    '   audgit log\n'
+    '   audgit show\n'
   );
 }
 
@@ -26,8 +28,6 @@ function showError(msg, value) {
   showUsage();
   process.exit(1); // exit with error
 }
-
-'use strict';
 
 var fs = require('fs');
 var domain = require('domain');
@@ -44,7 +44,7 @@ if (process.argv.length < 3) {
 }
 
 // Only allow these basic operations and their argument counts
-if (['add', 'rm', 'commit', 'status', 'log'].indexOf(argv[0]) === -1) {
+if (['add', 'rm', 'commit', 'status', 'show'].indexOf(argv[0]) === -1) {
   showError('Not a valid action:', argv[0]);
 } else {
   if (['add', 'rm', 'commit'].indexOf(argv[0]) != -1 && argv.length != 2) {
@@ -58,8 +58,10 @@ if (['add', 'rm', 'commit', 'status', 'log'].indexOf(argv[0]) === -1) {
 if (argv[0] == 'commit') {
   argv[2] = argv[1];
   argv[1] = '-am';
+} else if (argv[0] == 'show') {
+  argv = 'log -n 3 --date-order --reverse --stat'.split(' ');
+  argv.push('--pretty=format:%ai %an%n %s');
 }
-
 
 // TODO: check that /audgit exists or create it (error code ENOENT)
 // TODO: check that /audgit/.git exists or init it (error code ENOENT)
