@@ -18,7 +18,8 @@ function showUsage() {
     '   audgit commit -am "Configured Nginx"\n' +
     '   nano /etc/nginx/nginx.conf\n' +
     '   audgit commit "Gzip enabled"\n' +
-    '   audgit show\n'
+    '   audgit log\n',
+    '   audgit show -2\n'
   );
 }
 
@@ -44,12 +45,14 @@ if (process.argv.length < 3) {
 }
 
 // Only allow these basic operations and their argument counts
-if (['add', 'rm', 'commit', 'status', 'show'].indexOf(argv[0]) === -1) {
+if (['add', 'rm', 'commit', 'status', 'log', 'show'].indexOf(argv[0]) === -1) {
   showError('Not a valid action:', argv[0]);
 } else {
   if (['add', 'rm', 'commit'].indexOf(argv[0]) != -1 && argv.length != 2) {
     showError('Incorrect arguments for action:', argv[0]);
   } else if (['status', 'log'].indexOf(argv[0]) != -1 && argv.length != 1) {
+    showError('Incorrect arguments for action:', argv[0]);
+  } else if (['show'].indexOf(argv[0]) != -1 && argv.length > 2) {
     showError('Incorrect arguments for action:', argv[0]);
   }
 }
@@ -58,7 +61,7 @@ if (['add', 'rm', 'commit', 'status', 'show'].indexOf(argv[0]) === -1) {
 if (argv[0] == 'commit') {
   argv[2] = argv[1];
   argv[1] = '-am';
-} else if (argv[0] == 'show') {
+} else if (argv[0] == 'log') {
   argv = 'log -n 3 --date-order --reverse --stat'.split(' ');
   argv.push('--pretty=format:%ai %an%n %s');
 }
@@ -66,6 +69,7 @@ if (argv[0] == 'commit') {
 // TODO: check that /audgit exists or create it (error code ENOENT)
 // TODO: check that /audgit/.git exists or init it (error code ENOENT)
 // TODO: check for permissions to /audgit (error code EACCES)
+// TODO: write tests for all of these cases
 
 // console.dir(argv);
 
@@ -162,11 +166,11 @@ d.run(function() {
  * Child process helper functions
  */
 function onStdout (data) {
-  console.log('\n' + data);
+  console.log('Audgit:\n' + data);
 }
 
 function onStderr (data) {
-  console.log('\n' + data);
+  console.log('Audgit:\n' + data);
 }
 
 function onExit (code) {
