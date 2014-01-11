@@ -50,14 +50,14 @@ Admin logs into system. The welcome message automatically shows the latest entri
 Admin adds a new file into audgit and commits the changeset:
 
         $ audgit add /etc/nginx/nginx.conf
-        # On branch master
+        # On branch server01
         # Changes to be committed:
         #   (use "git reset HEAD <file>..." to unstage)
         #
         #	new file:   etc/hosts.deny
         $ audgit commit "Configured Nginx"
         Audgit:
-        [master e68e1df] Configured Nginx
+        [server01 e68e1df] Configured Nginx
          1 file changed, 20 insertions(+)
          create mode 100644 etc/hosts.deny
 
@@ -66,7 +66,7 @@ Admin edits a file and commits the changeset:
         $ nano /etc/nginx/nginx.conf
         $ audgit commit "Gzip enabled"
         Audgit:
-        [master 707ed42] Gzip enabled
+        [server01 707ed42] Gzip enabled
          1 file changed, 3 insertions(+)
 
 Admin inspects previous changesets:
@@ -114,26 +114,31 @@ Planned features (TODO)
 
 Items from the list below will be moved up once they are implemented.
 
+*   Implement auto-installation: on first run /audgit/ and the git repo will be initialized.
 *   Implement 'audgit blame'
+*   Implement 'audgit reset'
 *   Integrate audgit with most common text editors (nano, pico, joe, vi, vim, emacs) so that when a user invokes them to edit a file in system directories (mainly /etc/) the user would be prompted Y/N if they want the file to be added to audgit, thus omitting the need for the admin to remember to manually run 'audgit add'.
 *   Integrate Linux kernel system auditd with audgit to detect if non-root users write a file in system directories (mainly /etc/) the user would be prompted Y/N if they want the file to be added to audgit, thus minimizing the probability that the system has manual configuration file changes that are not tracked by audgit.
 *   Integrate audgit with bash and other shell's exit commands so that running exit would warn if the admin is about to leave the system with uncommitted changes in audgit tracked files.
 *   Integrate a timer into audgit so that it would remind users to run 'audgit commit' if uncommitted changes have been lying around for a while. Reminders should be sent via 'write' is user has not logged out and a shell is open, or via XMPP or e-mail if user is no longer logged in.
-
+*   Create test suite and better command arguments validation.
 *   Test to work on all Debian-based Linux-distributions.
 *   Test to work on all SUSE and other major Linux distributions.
 *   Test to work on all Unix-based systems, including MacOS X.
 
 
+Architecture
+------------
 
+Audgit is a Node.js command line tool (written in JavaScript). This is done partially to experiment how Node.js apps work as command line tools, but partially also because a simple bash script wouldn't work for a larger piece of software with test suites, daemon modes etc.
 
+At the moment there are no external dependencies aside standard Node.js, but later will have a test framework (Mocha etc), output colorization, e-mail/XMPP-communication etc.
 
+Audit is intended to be run in 'sudo'.
 
+Install
+-------
 
-
-
-
-
-
+Git clone this repo and run 'npm install -g'. After that the command *audgit* will be available as a global command line program.
 
 
