@@ -7,7 +7,7 @@
 function showUsage() {
   // TODO: colorize output to make error messages and help text more distinguishable
   console.log('\n' +
-    ' Audgit is a tool system administrators to help document their work.\n' +
+    ' A tool for system administrators to document their work.\n' +
     '\n' +
     ' When audgit is active all manually edited configuration files will\n' +
     ' be hard linked in a git repository located in /audgit/\n' +

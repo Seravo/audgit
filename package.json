@@ -3,7 +3,7 @@
   "preferGlobal": true,
   "version": "0.1.0",
   "author": "Otto Kekäläinen <otto@seravo.fi>",
-  "description": "System administration documentation and auditing using Git version control",
+  "description": "A tool for system administrators to document their work.",
   "contributors": [
   ],
   "bin": {
