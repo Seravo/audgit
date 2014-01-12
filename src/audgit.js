@@ -19,7 +19,9 @@ function showUsage() {
     '   nano /etc/nginx/nginx.conf\n' +
     '   audgit commit "Gzip enabled"\n' +
     '   audgit log\n',
-    '   audgit show -2\n'
+    '   audgit show -2\n',
+    '   audgit list\n',
+    '   audgit blame /etc/sshd_config\n'
   );
 }
 
@@ -45,12 +47,13 @@ if (process.argv.length < 3) {
 }
 
 // Only allow these basic operations and their argument counts
-if (['add', 'rm', 'commit', 'status', 'log', 'show'].indexOf(argv[0]) === -1) {
+if (['add', 'rm', 'commit', 'status', 'log',
+     'show', 'list', 'blame', 'reset'].indexOf(argv[0]) === -1) {
   showError('Not a valid action:', argv[0]);
 } else {
-  if (['add', 'rm', 'commit'].indexOf(argv[0]) != -1 && argv.length != 2) {
+  if (['add', 'rm', 'commit', 'blame'].indexOf(argv[0]) != -1 && argv.length != 2) {
     showError('Incorrect arguments for action:', argv[0]);
-  } else if (['status', 'log'].indexOf(argv[0]) != -1 && argv.length != 1) {
+  } else if (['status', 'log', 'list', 'reset'].indexOf(argv[0]) != -1 && argv.length != 1) {
     showError('Incorrect arguments for action:', argv[0]);
   } else if (['show'].indexOf(argv[0]) != -1 && argv.length > 2) {
     showError('Incorrect arguments for action:', argv[0]);
@@ -64,7 +67,13 @@ if (argv[0] == 'commit') {
 } else if (argv[0] == 'log') {
   argv = 'log -n 3 --date-order --reverse --stat'.split(' ');
   argv.push('--pretty=format:%ai %an%n %s');
+} else if (argv[0] == 'list') {
+  argv = 'ls-files -t -cdmok'.split(' ');
+} else if (argv[0] == 'reset') {
+  argv[1] = '--hard';
 }
+
+// TODO: major bug, reset deletes the hard link an replaces it with a non-linked file
 
 // TODO: check that /audgit exists or create it (error code ENOENT)
 // TODO: check that /audgit/.git exists or init it (error code ENOENT)
@@ -108,7 +117,7 @@ if (argv[0] == 'add' && argv[1]) {
       if (err.code != 'EEXIST') { throw err; }
     }
 
-    console.log('yes file');
+    //debug: console.log('yes file');
 /*
   } else if (stats.isDirectory()) {
     fs.mkdirSync(argv[1]);
@@ -155,7 +164,7 @@ d.run(function() {
   git.stderr.on('data', onStderr);
   git.on('close', onExit);
 
-  if (argv[0] == 'add' || argv[0] == 'rm') {
+  if (['add', 'rm', 'reset'].indexOf(argv[0]) != -1) {
     // re-run to show status
     spawn('git', ['status'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
   }
@@ -166,7 +175,11 @@ d.run(function() {
  * Child process helper functions
  */
 function onStdout (data) {
-  console.log('Audgit:\n' + data);
+  console.log('Audgit:');
+  if (argv[0] == 'ls-files') {
+    console.log('H=OK, C=Changed, ?=Unknown file\n');
+  }
+  console.log(data.toString());
 }
 
 function onStderr (data) {
