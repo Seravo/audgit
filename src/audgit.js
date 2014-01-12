@@ -18,10 +18,11 @@ function showUsage() {
     '   audgit commit -am "Configured Nginx"\n' +
     '   nano /etc/nginx/nginx.conf\n' +
     '   audgit commit "Gzip enabled"\n' +
-    '   audgit log\n',
-    '   audgit show -2\n',
     '   audgit list\n',
-    '   audgit blame /etc/sshd_config\n'
+    '  audgit log\n',
+    '  audgit show -2\n',
+    '  audgit blame /etc/sshd_config\n'
+//    '  audgit reset\n',
   );
 }
 
