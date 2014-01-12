@@ -117,6 +117,8 @@ Items from the list below will be moved up once they are implemented.
 *   Implement auto-installation: on first run /audgit/ and the git repo will be initialized.
 *   Implement 'audgit blame'
 *   Implement 'audgit reset'
+*   Implement 'audgit list' which lists the all files tracked by audgit, and perhaps also warns if the audgit working directory contains empty directories or individual files, which are not of type hard link or which have some errors.
+*   Implement 'audgit scan' which queries dpkg/rpm for file checksums and compares them to files on disk, thus finding files that differ from their original version and are potential targets for 'audgit add'.
 *   Integrate audgit with most common text editors (nano, pico, joe, vi, vim, emacs) so that when a user invokes them to edit a file in system directories (mainly /etc/) the user would be prompted Y/N if they want the file to be added to audgit, thus omitting the need for the admin to remember to manually run 'audgit add'.
 *   Integrate Linux kernel system auditd with audgit to detect if non-root users write a file in system directories (mainly /etc/) the user would be prompted Y/N if they want the file to be added to audgit, thus minimizing the probability that the system has manual configuration file changes that are not tracked by audgit.
 *   Integrate audgit with bash and other shell's exit commands so that running exit would warn if the admin is about to leave the system with uncommitted changes in audgit tracked files.
