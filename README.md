@@ -130,6 +130,7 @@ Items from the list below will be moved up once they are implemented.
 *   Integrate audgit with bash and other shell's exit commands so that running exit would warn if the admin is about to leave the system with uncommitted changes in audgit tracked files.
 *   Integrate a timer into audgit so that it would remind users to run 'audgit commit' if uncommitted changes have been lying around for a while. Reminders should be sent via 'write' is user has not logged out and a shell is open, or via XMPP or e-mail if user is no longer logged in.
 *   Integrate to syslog/systemd, e.g. echo via logger commits so that they are more discoverable
+*   Automatically add to each commit OS information (e.g. os.platform/arch/release) and package lists (dpkg -L, rpm -q).
 *   Create test suite and better command arguments validation.
 *   Test to work on all Debian-based Linux-distributions.
 *   Test to work on all SUSE and other major Linux distributions.
@@ -139,7 +140,7 @@ Items from the list below will be moved up once they are implemented.
 Architecture
 ------------
 
-Audgit is a Node.js command line tool (written in JavaScript). This is done partially to experiment how Node.js apps work as command line tools, but partially also because a simple bash script wouldn't work for a larger piece of software with test suites, daemon modes etc.
+Audgit is a Node.js command line tool (written in JavaScript). This is done partially to experiment how Node.js apps work as command line tools, but partially also because a simple bash script wouldn't work for a larger piece of software with test suites, daemon modes, fast async file operations etc.
 
 At the moment there are no external dependencies aside standard Node.js, but later will have a test framework (Mocha etc), output colorization, e-mail/XMPP-communication etc.
 

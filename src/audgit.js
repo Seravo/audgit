@@ -190,6 +190,14 @@ d.run(function() {
     // re-run to show status
     spawn('git', ['status'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
   }
+
+  if (['init'].indexOf(argv[0]) != -1) {
+    // rename master branch to hostname
+    var os = require('os');
+    spawn('git', ['checkout', '-b', os.hostname()], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
+    // TODO: do an initial commit with basic OS info (platform, release) and installed packages list
+  }
+
 });
 
 
