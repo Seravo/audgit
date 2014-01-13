@@ -9,3 +9,5 @@ git log --pretty=format:"%an: %s" -n 1 --stat | wall
 # as there is no way to know what is the user tty
 # from inside this script
 
+# TODO: don't run command here but call external node.js script to do it
+#       so that later github updates will update the commit hook

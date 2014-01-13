@@ -168,7 +168,7 @@ d.on('error', function(err) {
   }
 });
 
-// Clean up any trailing slashes to avoid Git from complaining
+// Clean up any preceeding slashes to avoid Git from complaining
 // that the file is outside the git repository
 if (argv[1] && argv[1].substr(0, 1) == '/') {
   argv[1] = argv[1].substr(1);
@@ -201,11 +201,14 @@ if (['init'].indexOf(argv[0]) != -1) {
 
   // Copy git hook
   copyFile('scripts/post-commit', '/audgit/.git/hooks/post-commit', function(err) {
-    if (err) { console.log(err); }
+    if (err) { throw err; }
   });
+  // TODO: line below yielded error while installation in the wild,
+  //       investigate possible race condition and why post-commit file was empty
   fs.chmodSync('/audgit/.git/hooks/post-commit', '755');
 
   // Copy MOTD script if system supports it
+  // TODO: try just making symbolic links instead of copying
   try {
     var motdpath = fs.lstatSync('/etc/update-motd.d');
   } catch (err) {
