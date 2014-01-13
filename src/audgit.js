@@ -18,18 +18,22 @@ function showUsage() {
     '   audgit commit -am "Configured Nginx"\n' +
     '   nano /etc/nginx/nginx.conf\n' +
     '   audgit commit "Gzip enabled"\n' +
-    '   audgit list\n',
-    '  audgit log\n',
-    '  audgit show -2\n',
-    '  audgit blame /etc/sshd_config\n'
-//    '  audgit reset\n',
+    '   audgit list\n' +
+    '\n' +
+    ' Additional examples:\n' +
+    '   audgit log\n' +
+    '   audgit show -2\n' +
+    '   audgit blame /etc/sshd_config\n'
+//    '  audgit reset\n'
   );
 }
 
-function showError(msg, value) {
+function showError(msg, value, skipUsage) {
   if (value === undefined) { var value = ''; }
   console.log('ERROR:', msg, value);
-  showUsage();
+  if (!skipUsage) {
+    showUsage();
+  }
   process.exit(1); // exit with error
 }
 
@@ -49,12 +53,12 @@ if (process.argv.length < 3) {
 
 // Only allow these basic operations and their argument counts
 if (['add', 'rm', 'commit', 'status', 'log',
-     'show', 'list', 'blame', 'reset'].indexOf(argv[0]) === -1) {
+     'show', 'list', 'blame', 'reset', 'init'].indexOf(argv[0]) === -1) {
   showError('Not a valid action:', argv[0]);
 } else {
   if (['add', 'rm', 'commit', 'blame'].indexOf(argv[0]) != -1 && argv.length != 2) {
     showError('Incorrect arguments for action:', argv[0]);
-  } else if (['status', 'log', 'list', 'reset'].indexOf(argv[0]) != -1 && argv.length != 1) {
+  } else if (['status', 'log', 'list', 'reset', 'init'].indexOf(argv[0]) != -1 && argv.length != 1) {
     showError('Incorrect arguments for action:', argv[0]);
   } else if (['show'].indexOf(argv[0]) != -1 && argv.length > 2) {
     showError('Incorrect arguments for action:', argv[0]);
@@ -83,6 +87,23 @@ if (argv[0] == 'commit') {
 
 // console.dir(argv);
 
+// Stop reinitialization of Audgit
+if (argv[0] == 'init') {
+  try {
+    var audgitpath = fs.lstatSync('/audgit');
+  } catch (err) {
+    if (err.code != 'ENOENT') {
+      throw err;
+    } else {
+      fs.mkdirSync('/audgit');
+    }
+  }
+  if (audgitpath && audgitpath.isDirectory()) {
+    showError('Audgit already initialized', '', true);
+  } else if (audgitpath) {
+    showError('Remove current /audgit and try again.');
+  }
+}
 
 // Add to git repo via hard links
 if (argv[0] == 'add' && argv[1]) {
@@ -141,7 +162,7 @@ var d = domain.create();
 
 d.on('error', function(err) {
   if (err && err.code == 'ENOENT') {
-    showError('Check that directory /audgit/ exists');
+    showError('The Audgit directory does not exists. Run "audgit init".', '', true);
   } else {
     console.error(err);
   }
@@ -178,7 +199,7 @@ d.run(function() {
 function onStdout (data) {
   console.log('Audgit:');
   if (argv[0] == 'ls-files') {
-    console.log('H=OK, C=Changed, ?=Unknown file\n');
+    console.log('H=OK, C=Changed, ?=Unknown, R=Removed\n');
   }
   console.log(data.toString());
 }
@@ -188,7 +209,11 @@ function onStderr (data) {
 }
 
 function onExit (code) {
-  if (code > 0) {
+  if (code == 0) {
+    // 0 is OK
+  } else if (code == 128) {
+    showError('The Audgit repository does not exists. Run "audgit init".', '', true);
+  } else {
     showError('Child process exited with code', code);
   }
 }

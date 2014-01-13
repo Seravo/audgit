@@ -115,13 +115,21 @@ Planned features (TODO)
 Items from the list below will be moved up once they are implemented.
 
 *   Implement auto-installation: on first run /audgit/ and the git repo will be initialized.
-*   Implement 'audgit reset' properly so that hard link is not lost
+*   Implement 'audgit reset' properly so that hard link is not lost.
 *   Implement 'audgit list' properly so that warns if some file is not a hard link.
 *   Implement 'audgit scan' which queries dpkg/rpm for file checksums and compares them to files on disk, thus finding files that differ from their original version and are potential targets for 'audgit add'.
+    *   Debian:
+        *   cruft, debsums
+        *   dpkg -L --list-all-package-files | grep "^/etc" > dpkg-etc-files.dat
+        *   find /etc -type f -o -type l > all-usr-files.dat
+        *   sort dpkg-files.dat all-usr-files.dat | uniq -c | grep " 1 "
+    *   SUSE/CentOS:
+        * rpm -V
 *   Integrate audgit with most common text editors (nano, pico, joe, vi, vim, emacs) so that when a user invokes them to edit a file in system directories (mainly /etc/) the user would be prompted Y/N if they want the file to be added to audgit, thus omitting the need for the admin to remember to manually run 'audgit add'.
 *   Integrate Linux kernel system auditd with audgit to detect if non-root users write a file in system directories (mainly /etc/) the user would be prompted Y/N if they want the file to be added to audgit, thus minimizing the probability that the system has manual configuration file changes that are not tracked by audgit.
 *   Integrate audgit with bash and other shell's exit commands so that running exit would warn if the admin is about to leave the system with uncommitted changes in audgit tracked files.
 *   Integrate a timer into audgit so that it would remind users to run 'audgit commit' if uncommitted changes have been lying around for a while. Reminders should be sent via 'write' is user has not logged out and a shell is open, or via XMPP or e-mail if user is no longer logged in.
+*   Integrate to syslog/systemd, e.g. echo via logger commits so that they are more discoverable
 *   Create test suite and better command arguments validation.
 *   Test to work on all Debian-based Linux-distributions.
 *   Test to work on all SUSE and other major Linux distributions.
