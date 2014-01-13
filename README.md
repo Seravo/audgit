@@ -114,7 +114,6 @@ Planned features (TODO)
 
 Items from the list below will be moved up once they are implemented.
 
-*   Implement auto-installation: on first run /audgit/ and the git repo will be initialized.
 *   Implement 'audgit reset' properly so that hard link is not lost.
 *   Implement 'audgit list' properly so that warns if some file is not a hard link.
 *   Implement 'audgit scan' which queries dpkg/rpm for file checksums and compares them to files on disk, thus finding files that differ from their original version and are potential targets for 'audgit add'.

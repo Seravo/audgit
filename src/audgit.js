@@ -186,25 +186,47 @@ d.run(function() {
   git.stderr.on('data', onStderr);
   git.on('close', onExit);
 
-  if (['add', 'rm', 'reset'].indexOf(argv[0]) != -1) {
-    // re-run to show status
-    spawn('git', ['status'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
-  }
-
-  if (['init'].indexOf(argv[0]) != -1) {
-    // rename master branch to hostname
-    var os = require('os');
-    spawn('git', ['checkout', '-b', os.hostname()], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
-    // TODO: do an initial commit with basic OS info (platform, release) and installed packages list
-  }
-
 });
+
+if (['add', 'rm', 'reset'].indexOf(argv[0]) != -1) {
+  // re-run to show status
+  spawn('git', ['status'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
+}
+
+if (['init'].indexOf(argv[0]) != -1) {
+  // rename master branch to hostname
+  var os = require('os');
+  spawn('git', ['checkout', '-b', os.hostname()], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
+  // TODO: do an initial commit with basic OS info (platform, release) and installed packages list
+
+  // Copy git hook
+  copyFile('scripts/post-commit', '/audgit/.git/hooks/post-commit', function(err) {
+    if (err) { console.log(err); }
+  });
+  fs.chmodSync('/audgit/.git/hooks/post-commit', '755');
+
+  // Copy MOTD script if system supports it
+  try {
+    var motdpath = fs.lstatSync('/etc/update-motd.d');
+  } catch (err) {
+    if (err.code != 'ENOENT') {
+      throw err;
+    }
+  }
+  if (motdpath && motdpath.isDirectory()) {
+    copyFile('scripts/80-audgit', '/etc/update-motd.d/80-audgit', function(err) {
+      if (err) { throw err; }
+    });
+    fs.chmodSync('/etc/update-motd.d/80-audgit', '755');
+  }
+}
+
 
 
 /*
  * Child process helper functions
  */
-function onStdout (data) {
+function onStdout(data) {
   console.log('Audgit:');
   if (argv[0] == 'ls-files') {
     console.log('H=OK, C=Changed, ?=Unknown, R=Removed\n');
@@ -212,16 +234,40 @@ function onStdout (data) {
   console.log(data.toString());
 }
 
-function onStderr (data) {
+function onStderr(data) {
   console.log('Audgit:\n' + data);
 }
 
-function onExit (code) {
+function onExit(code) {
   if (code == 0) {
     // 0 is OK
   } else if (code == 128) {
     showError('The Audgit repository does not exists. Run "audgit init".', '', true);
   } else {
     showError('Child process exited with code', code);
+  }
+}
+
+function copyFile(source, target, cb) {
+  var cbCalled = false;
+
+  var rd = fs.createReadStream(source);
+  rd.on("error", function(err) {
+    done(err);
+  });
+  var wr = fs.createWriteStream(target);
+  wr.on("error", function(err) {
+    done(err);
+  });
+  wr.on("close", function(ex) {
+    done();
+  });
+  rd.pipe(wr);
+
+  function done(err) {
+    if (!cbCalled) {
+      cb(err);
+      cbCalled = true;
+    }
   }
 }
