@@ -114,6 +114,8 @@ Planned features (TODO)
 
 Items from the list below will be moved up once they are implemented.
 
+*   Implement check that /audgit directory exists and had a git repo
+    *   Run this check on every invocation, even on just 'audgit'
 *   Force users to configure their git settings before accepting a commit
     *   git config --global user.name "Firstname Lastname"
     *   git config --global user.email "username@seravo.fi"
@@ -152,6 +154,8 @@ Audit is intended to be run in 'sudo'.
 Install
 -------
 
-Git clone this repo and run 'npm install -g'. After that the command *audgit* will be available as a global command line program.
+Git clone this repo and run 'npm install -g'. After that the command *audgit* will be available as a global command line program. Depends on having packages git and npm installed first.
+
+After installation run first 'sudo audgit init'.
 
 
