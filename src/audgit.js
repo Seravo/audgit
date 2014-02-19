@@ -15,7 +15,7 @@ function showUsage() {
     '\n' +
     ' Typical work-flow:\n' +
     '   audgit add /etc/nginx/nginx.conf\n' +
-    '   audgit commit -am "Configured Nginx"\n' +
+    '   audgit commit "Configured Nginx"\n' +
     '   nano /etc/nginx/nginx.conf\n' +
     '   audgit commit "Gzip enabled"\n' +
     '   audgit list\n' +
@@ -92,7 +92,7 @@ gitUserName.stdout.on('data', function(data) {
 });
 gitUserName.on('close', function(data) {
   if (gitUserName.result == undefined) {
-    showError('"git config --global user.name" must be defined to use Audgit!"', '', true);
+    showError('"git config --global user.name" must be defined to use Audgit!', '', true);
   }
 });
 
@@ -103,7 +103,7 @@ gitUserEmail.stdout.on('data', function(data) {
 });
 gitUserEmail.on('close', function(data) {
   if (gitUserEmail.result == undefined) {
-    showError('"git config --global user.email" must be defined to use Audgit!"', '', true);
+    showError('"git config --global user.email" must be defined to use Audgit!', '', true);
   }
 });
 
@@ -253,6 +253,7 @@ function audgitInit(args) {
     } else {
 
       // Audgit repository has not been created. Creating it now..
+      console.log('Creating Audgit repository...');
 
       // Prepare spawn to run Git in child process
       var gitInit = spawn(
@@ -369,14 +370,14 @@ function copyFile(source, target, cb) {
   var cbCalled = false;
 
   var rd = fs.createReadStream(source);
-  rd.on("error", function(err) {
+  rd.on('error', function(err) {
     done(err);
   });
   var wr = fs.createWriteStream(target);
-  wr.on("error", function(err) {
+  wr.on('error', function(err) {
     done(err);
   });
-  wr.on("close", function(ex) {
+  wr.on('close', function(ex) {
     done();
   });
   rd.pipe(wr);
