@@ -157,7 +157,7 @@ That the command *audgit* will be available as a global command line program aft
   sudo npm install -g
   sudo audgit init
 
-__Note:___ For Node.js [at least version 0.8](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager) is required (due to module domain requirements).
+__Note:__ For Node.js [at least version 0.8](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager) is required (due to module domain requirements).
 
 
 Audgit initialization is also automatically run also on first audgit command invocation if not done explicitly earlier.

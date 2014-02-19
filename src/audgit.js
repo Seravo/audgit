@@ -309,7 +309,7 @@ function audgitInitPopulate() {
   dpkgGetSelections.on('close', function(data) {
     var gitAdd = spawn('git', ['add', '--all', '/audgit'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
     gitAdd.on('close', function(data) {
-      spawn('git', ['commit', '-am', '"First commit with package list"'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
+      spawn('git', ['commit', '-am', 'First commit with package list'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
     });
   });
 
