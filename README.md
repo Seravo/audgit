@@ -149,8 +149,15 @@ Audit is intended to be run in 'sudo'.
 Install
 -------
 
-Git clone this repo and run 'npm install -g'. After that the command *audgit* will be available as a global command line program. Depends on having packages git and npm installed first.
+That the command *audgit* will be available as a global command line program after installation. Audgit depends on having packages git and npm installed first.
 
-After installation run first 'sudo audgit init'.
+  sudo apt-get install git npm
+  git clone https://github.com/Seravo/audgit.git
+  cd audgit
+  sudo npm install -g
+  sudo audgit init
 
+Audgit initialization is also automatically run also on first audgit command invocation if not done explicitly earlier.
+
+Once Audgit is installed you most likely want to run a lot of commands like `sudo audgit add /etc/a/b/c`.
 
