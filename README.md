@@ -7,7 +7,7 @@ Audgit is a tool for system administrators to document their work. Administrator
 
 > Audgit is for sysadmins what git is for developers.
 
-Documentation is an important part of any production system operations, yet it is way to often inaccurate, lagging behind and neglected. This is because writing documentation is boring, laboursome and the admin who writes the documentation does not immediately get any benefit from it. On the contraty time put on updating documentation is often away from actual sysadmin work. Audgit was designed to solve this.
+Documentation is an important part of any production system operations, yet it is way to often inaccurate, lagging behind and neglected. This is because writing documentation is boring, laboursome and the admin who writes the documentation does not immediately get any benefit from it. On the contrary time put on updating documentation is often away from actual sysadmin work. Audgit was designed to solve this.
 
 
 Typical work-flow (with 'screenshots')
@@ -97,12 +97,12 @@ The most important design goal for audgit is ease of use. A tool like this must 
     *   audgit commit "[message]"
 *   Every time an admin logs into the system the latest entries in the audgit log is shown.
 *   If other admins are logged in while an admin makes an audgit commit, they will all see the audgit entry in their shells (via wall broadcasting).
-*   Audgit is primarly intended to track system configuration changes made to files in the /etc/ directory, but any file can be added, e.g. from /var/spool/cron/crontabs/.
+*   Audgit is primarily intended to track system configuration changes made to files in the /etc/ directory, but any file can be added, e.g. from /var/spool/cron/crontabs/.
 
 Audgit is built as a wrapper around git. This way audgit inherits all the beauty of git.
 
 *   All audgit entries including the actual files, their metadata and the commit messages are stored in the best version control system the world has ever seen, in the location /audgit/.git/
-*   All files in the working directory /audgit/ reflect their hard-linked equivalients. Any change to the system can be reverted simply by checking out to the working directory the previous version of the file. Reverts can be made for individual files or by stepping backwards complete changesets.
+*   All files in the working directory /audgit/ reflect their hard-linked equivalents. Any change to the system can be reverted simply by checking out to the working directory the previous version of the file. Reverts can be made for individual files or by stepping backwards complete changesets.
 *   The whole history of changes can be viewed and visualized with standard git tools.
 *   All changes are cryptographically linked to each other so the history is immutable. Compared with 'git push' to a remote server the history of changes can be made tamper-proof.
 *   All changes can be pushed and pulled from system to system using standard git methods.
@@ -114,11 +114,6 @@ Planned features (TODO)
 
 Items from the list below will be moved up once they are implemented.
 
-*   Implement check that /audgit directory exists and had a git repo
-    *   Run this check on every invocation, even on just 'audgit'
-*   Force users to configure their git settings before accepting a commit
-    *   git config --global user.name "Firstname Lastname"
-    *   git config --global user.email "username@seravo.fi"
 *   Implement 'audgit reset' properly so that hard link is not lost.
 *   Implement 'audgit list' properly so that warns if some file is not a hard link.
 *   Implement 'audgit scan' which queries dpkg/rpm for file checksums and compares them to files on disk, thus finding files that differ from their original version and are potential targets for 'audgit add'.
@@ -147,7 +142,7 @@ Architecture
 
 Audgit is a Node.js command line tool (written in JavaScript). This is done partially to experiment how Node.js apps work as command line tools, but partially also because a simple bash script wouldn't work for a larger piece of software with test suites, daemon modes, fast async file operations etc.
 
-At the moment there are no external dependencies aside standard Node.js, but later will have a test framework (Mocha etc), output colorization, e-mail/XMPP-communication etc.
+At the moment there are no external dependencies aside standard Node.js, but later will have a test framework (Mocha etc), output colourization, e-mail/XMPP-communication etc.
 
 Audit is intended to be run in 'sudo'.
 

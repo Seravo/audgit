@@ -80,21 +80,17 @@ if (argv[0] == 'commit') {
 }
 
 // TODO: BUG: reset deletes the hard link an replaces it with a non-linked file
-
-// TODO: check that /audgit exists or create it (error code ENOENT)
-// TODO: check that /audgit/.git exists or init it (error code ENOENT)
 // TODO: check for permissions to /audgit (error code EACCES)
-// TODO: write tests for all of these cases
 
 // console.dir(argv);
 
 
 // Make sure user has configured user.name
 var gitUserName = spawn('git', ['config', '--global', 'user.name'], {env: process.env});
-gitUserName.stdout.on('data', function (data) {
+gitUserName.stdout.on('data', function(data) {
   gitUserName.result = data;
 });
-gitUserName.on('close', function (data) {
+gitUserName.on('close', function(data) {
   if (gitUserName.result == undefined) {
     showError('"git config --global user.name" must be defined to use Audgit!"', '', true);
   }
@@ -102,10 +98,10 @@ gitUserName.on('close', function (data) {
 
 // Make sure user has configured user.email
 var gitUserEmail = spawn('git', ['config', '--global', 'user.email'], {env: process.env});
-gitUserEmail.stdout.on('data', function (data) {
+gitUserEmail.stdout.on('data', function(data) {
   gitUserEmail.result = data;
 });
-gitUserEmail.on('close', function (data) {
+gitUserEmail.on('close', function(data) {
   if (gitUserEmail.result == undefined) {
     showError('"git config --global user.email" must be defined to use Audgit!"', '', true);
   }
@@ -301,7 +297,7 @@ function audgitInitPopulate() {
   // TODO: do an initial commit with basic OS info (platform, release) and installed packages list
   var dpkgGetSelections = spawn('dpkg', ['--get-selections'], {cwd: '/audgit', env: process.env});
 
-  dpkgGetSelections.stdout.on('data', function (data) {
+  dpkgGetSelections.stdout.on('data', function(data) {
     fs.appendFile('/audgit/dpkg-selections', data, function(err) {
       if (err) {
         throw err;
@@ -309,9 +305,9 @@ function audgitInitPopulate() {
     });
   });
 
-  dpkgGetSelections.on('close', function (data) {
+  dpkgGetSelections.on('close', function(data) {
     var gitAdd = spawn('git', ['add', '--all', '/audgit'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
-    gitAdd.on('close', function (data) {
+    gitAdd.on('close', function(data) {
       spawn('git', ['commit', '-am', '"First commit with package list"'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
     });
   });
