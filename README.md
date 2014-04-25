@@ -151,11 +151,13 @@ Install
 
 That the command *audgit* will be available as a global command line program after installation. Audgit depends on having packages git and npm installed first.
 
-  sudo apt-get install git nodejs
-  git clone https://github.com/Seravo/audgit.git
-  cd audgit
-  sudo npm install -g
-  sudo audgit init
+        sudo apt-get install git nodejs npm
+        # If git was installed for the first time,
+        # rember to set git config name and e-mail
+        git clone https://github.com/Seravo/audgit.git
+        cd audgit
+        sudo npm install -g
+        sudo audgit init
 
 __Note:__ For Node.js [at least version 0.8](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager) is required (due to module domain requirements).
 
