@@ -1,7 +1,7 @@
 {
   "name": "audgit",
   "preferGlobal": true,
-  "version": "0.9.5",
+  "version": "0.9.6",
   "author": "Otto Kekäläinen <otto@seravo.fi>",
   "description": "A tool for system administrators to document their work.",
   "contributors": [

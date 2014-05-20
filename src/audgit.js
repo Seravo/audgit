@@ -273,6 +273,7 @@ function audgitInit(args) {
         if (code == 0) {
           // 0 is OK
           audgitInitPopulate();
+          audgitInitHookinstall();
         } else {
           showError('Child process exited with code', code);
         }
@@ -283,6 +284,7 @@ function audgitInit(args) {
 
   if (audgitPath && audgitPath.isDirectory()) {
     if (args.explicit) {
+      audgitInitHookinstall();
       showError('Audgit repository was already created', '', true);
     }
   } else if (audgitPath) {
@@ -308,6 +310,12 @@ function audgitInitPopulate() {
       spawn('git', ['commit', '-am', 'First commit with package list'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
     });
   });
+}
+
+/*
+ * Install Audgit hooks, should be safe to run multiple times
+ */
+function audgitInitHookinstall() {
 
   // Copy git hook
   copyFile('scripts/post-commit', '/audgit/.git/hooks/post-commit', function(err) {
@@ -331,8 +339,25 @@ function audgitInitPopulate() {
     copyFile('scripts/80-audgit', '/etc/update-motd.d/80-audgit', function(err) {
       if (err) { throw err; }
     });
+    // Script must be executable
     fs.chmodSync('/etc/update-motd.d/80-audgit', '755');
   }
+
+  // Copy Apt hook if system supports it
+  // TODO: try just making symbolic links instead of copying
+  try {
+    var motdpath = fs.lstatSync('/etc/apt/apt.conf.d');
+  } catch (err) {
+    if (err.code != 'ENOENT') {
+      throw err;
+    }
+  }
+  if (motdpath && motdpath.isDirectory()) {
+    copyFile('scripts/08audgit', '/etc/apt/apt.conf.d/08audgit', function(err) {
+      if (err) { throw err; }
+    });
+  }
+
 }
 
 
