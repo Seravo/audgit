@@ -1,0 +1,3 @@
+DPkg::Post-Invoke      { "if [ -x /usr/bin/audgit ]; then audgit post-install; fi"; };
+
+RPM::Post-Invoke      { "if [ -x /usr/bin/audgit ]; then audgit post-install; fi"; };

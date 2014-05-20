@@ -53,7 +53,8 @@ if (process.argv.length < 3) {
 }
 
 // Only allow these basic operations and their argument counts
-if (['add', 'rm', 'commit', 'status', 'log',
+//   post-install is a special command called by dpkg to populate package list
+if (['add', 'rm', 'commit', 'status', 'log', 'post-install',
      'show', 'list', 'blame', 'reset', 'init'].indexOf(argv[0]) === -1) {
   showError('Not a valid action:', argv[0]);
 } else {
@@ -191,9 +192,9 @@ d.on('error', function(err) {
 
 /*
  * Main command is executed here by passing the command on to Git
- * But execute it only command is not 'init' and previous init is OK
+ * But execute it only command is not 'post-install' or 'init' and previous init is OK
  */
-if (argv[0] != 'init' && audgitInit()) {
+if (['post-install', 'init'].indexOf(argv[0]) == -1 && audgitInit()) {
   d.run(function() {
 
     // Prepare spawn to run Git in child process
@@ -218,6 +219,10 @@ if (['add', 'rm', 'reset'].indexOf(argv[0]) != -1) {
   spawn('git', ['status'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
 }
 
+if (['post-install'].indexOf(argv[0]) != -1) {
+  // update package list
+  audgitDpkgPostInstall();
+}
 
 
 /*
@@ -296,17 +301,8 @@ function audgitInitPopulate() {
   spawn('git', ['checkout', '-b', os.hostname()], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
 
   // TODO: do an initial commit with basic OS info (platform, release) and installed packages list
-  var dpkgGetSelections = spawn('dpkg', ['--get-selections'], {cwd: '/audgit', env: process.env});
 
-  dpkgGetSelections.stdout.on('data', function(data) {
-    fs.appendFile('/audgit/dpkg-selections', data, function(err) {
-      if (err) {
-        throw err;
-      }
-    });
-  });
-
-  dpkgGetSelections.on('close', function(data) {
+  audgitDpkgPostInstall(function(data) {
     var gitAdd = spawn('git', ['add', '--all', '/audgit'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
     gitAdd.on('close', function(data) {
       spawn('git', ['commit', '-am', 'First commit with package list'], {cwd: '/audgit', env: process.env, stdio: 'inherit'});
@@ -339,6 +335,25 @@ function audgitInitPopulate() {
   }
 }
 
+
+/*
+ * Update package listing
+ */
+function audgitDpkgPostInstall(callback) {
+  var dpkgGetSelections = spawn('dpkg', ['--get-selections'], {cwd: '/audgit', env: process.env});
+
+  dpkgGetSelections.stdout.on('data', function(data) {
+    fs.appendFile('/audgit/dpkg-selections', data, function(err) {
+      if (err) {
+        throw err;
+      }
+    });
+  });
+
+  if (callback != undefined) {
+    dpkgGetSelections.on('close', callback(data));
+  }
+}
 
 
 /*
